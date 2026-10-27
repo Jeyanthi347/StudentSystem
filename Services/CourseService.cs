@@ -40,4 +40,14 @@ public class CourseService(CourseRepository courseRepository)
 
         return await courseRepository.GetCourseByIdAsync(id);
     }
+    public async Task<bool> DeleteCourseAsync(int id)
+    {
+        if (id <= 0)
+        {
+            throw new ArgumentException(
+                "Course ID must be greater than zero.");
+        }
+
+        return await courseRepository.DeleteCourseAsync(id);
+    }
 }

@@ -102,4 +102,26 @@ public class CourseRepository(string connectionString)
 
         return null;
     }
+        public async Task<bool> DeleteCourseAsync(int id)
+        {
+        const string query = """
+        DELETE FROM Courses
+        WHERE CourseId = @CourseId
+        """;
+
+        await using var connection =
+            new SqlConnection(_connectionString);
+
+        await using var command =
+            new SqlCommand(query, connection);
+
+        command.Parameters.AddWithValue("@CourseId", id);
+
+        await connection.OpenAsync();
+
+        int rowsAffected = await command.ExecuteNonQueryAsync();
+
+        return rowsAffected > 0;
+    }
 }
+

@@ -289,6 +289,7 @@ public class Program
             Console.WriteLine("6. Search Course by ID");
             Console.WriteLine("7. Update Student");
             Console.WriteLine("8. Delete Student");
+            Console.WriteLine("9. Delete Course");
             Console.WriteLine("0. Exit");
             Console.Write("Enter your choice: ");
 
@@ -559,6 +560,53 @@ public class Program
                     default:
                         Console.WriteLine("Invalid choice. Try again.");
                         break;
+
+                    case "9":
+                        {
+                            Console.Write("Enter the Course ID to delete: ");
+
+                            if (!int.TryParse(Console.ReadLine(), out int deleteCourseId))
+                            {
+                                Console.WriteLine("Please enter a valid Course ID.");
+                                break;
+                            }
+
+                            Course? courseToDelete =
+                                await courseService.GetCourseByIdAsync(deleteCourseId);
+
+                            if (courseToDelete == null)
+                            {
+                                Console.WriteLine("Course not found.");
+                                break;
+                            }
+
+                            Console.Write(
+                                $"Are you sure you want to delete {courseToDelete.CourseName}? (yes/no): ");
+
+                            string confirmation = Console.ReadLine() ?? "";
+
+                            if (confirmation.Equals("yes",
+                                StringComparison.OrdinalIgnoreCase))
+                            {
+                                bool deleted =
+                                    await courseService.DeleteCourseAsync(deleteCourseId);
+
+                                if (deleted)
+                                {
+                                    Console.WriteLine("Course deleted successfully!");
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Course could not be deleted.");
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("Deletion cancelled.");
+                            }
+
+                            break;
+                        }
                 }
             }
             catch (Exception ex)
