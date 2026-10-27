@@ -148,4 +148,51 @@ public class EnrollmentRepository(string connectionString)
         return rowsAffected > 0;
     }
 
+
+    public async Task<List<Enrollment>> GetEnrollmentsByStudentIdAsync(int studentId)
+    {
+        const string query = """
+        SELECT e.EnrollmentId,
+               e.StudentId,
+               s.Name,
+               e.CourseId,
+               c.CourseName,
+               e.EnrollmentDate
+        FROM Enrollments e
+        INNER JOIN Students s
+            ON e.StudentId = s.StudentId
+        INNER JOIN Courses c
+            ON e.CourseId = c.CourseId
+        WHERE e.StudentId = @StudentId
+        ORDER BY e.EnrollmentId
+        """;
+
+        List<Enrollment> enrollments = new List<Enrollment>();
+
+        await using var connection = new SqlConnection(_connectionString);
+        await using var command = new SqlCommand(query, connection);
+
+        command.Parameters.AddWithValue("@StudentId", studentId);
+
+        await connection.OpenAsync();
+
+        await using var reader = await command.ExecuteReaderAsync();
+
+        while (await reader.ReadAsync())
+        {
+            enrollments.Add(new Enrollment
+            {
+                EnrollmentId = reader.GetInt32(0),
+                StudentId = reader.GetInt32(1),
+                StudentName = reader.GetString(2),
+                CourseId = reader.GetInt32(3),
+                CourseName = reader.GetString(4),
+                EnrollmentDate = reader.GetDateTime(5)
+            });
+        }
+
+        return enrollments;
+    }
+
+
 }

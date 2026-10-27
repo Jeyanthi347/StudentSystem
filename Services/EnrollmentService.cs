@@ -54,4 +54,18 @@ public class EnrollmentService(EnrollmentRepository enrollmentRepository)
         return await enrollmentRepository.DeleteEnrollmentAsync(id);
     }
 
+
+
+    public async Task<List<Enrollment>> GetEnrollmentsByStudentIdAsync(int studentId)
+    {
+        if (studentId <= 0)
+        {
+            throw new ArgumentException(
+                "Student ID must be greater than zero.");
+        }
+
+        return await enrollmentRepository.GetEnrollmentsByStudentIdAsync(studentId);
+    }
+
+
 }

@@ -303,6 +303,7 @@ public class Program
             Console.WriteLine("14. View All Enrollments");
             Console.WriteLine("15. Search Enrollment by ID");
             Console.WriteLine("16. Delete Enrollment");
+            Console.WriteLine("17. View Enrollments by Student ID");
             Console.WriteLine("0. Exit");
             Console.Write("Enter your choice: ");
 
@@ -885,6 +886,50 @@ public class Program
 
                             break;
                         }
+
+
+                    case "17":
+                        {
+                            Console.Write("Enter Student ID: ");
+
+                            if (!int.TryParse(Console.ReadLine(), out int searchStudentId))
+                            {
+                                Console.WriteLine("Please enter a valid Student ID.");
+                                break;
+                            }
+
+                            Student? student =
+                                await studentService.GetStudentByIdAsync(searchStudentId);
+
+                            if (student == null)
+                            {
+                                Console.WriteLine("Student not found.");
+                                break;
+                            }
+
+                            List<Enrollment> enrollments =
+                                await enrollmentService.GetEnrollmentsByStudentIdAsync(searchStudentId);
+
+                            if (enrollments.Count == 0)
+                            {
+                                Console.WriteLine("This student has no enrollments.");
+                            }
+                            else
+                            {
+                                Console.WriteLine($"\nEnrollments for {student.Name}:");
+
+                                foreach (Enrollment e in enrollments)
+                                {
+                                    Console.WriteLine(
+                                        $"Enrollment ID: {e.EnrollmentId}, " +
+                                        $"Course: {e.CourseName}, " +
+                                        $"Enrollment Date: {e.EnrollmentDate:dd-MM-yyyy}");
+                                }
+                            }
+
+                            break;
+                        }
+
 
                 }
             }
