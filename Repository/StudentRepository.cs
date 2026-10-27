@@ -261,4 +261,34 @@ public class StudentRepository(string connectionString)
 
         return rowsAffected > 0;
     }
+    public async Task<Student?> GetStudentByEmailAsync(string email)
+    {
+        const string query = """
+        SELECT StudentId, Name, Email, Age
+        FROM Students
+        WHERE Email = @Email
+        """;
+
+        await using var connection = new SqlConnection(_connectionString);
+        await using var command = new SqlCommand(query, connection);
+
+        command.Parameters.AddWithValue("@Email", email);
+
+        await connection.OpenAsync();
+
+        await using var reader = await command.ExecuteReaderAsync();
+
+        if (await reader.ReadAsync())
+        {
+            return new Student
+            {
+                StudentId = reader.GetInt32(0),
+                Name = reader.GetString(1),
+                Email = reader.GetString(2),
+                Age = reader.GetInt32(3)
+            };
+        }
+
+        return null;
+    }
 }

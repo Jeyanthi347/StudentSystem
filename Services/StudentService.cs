@@ -122,4 +122,13 @@ public class StudentService(StudentRepository studentRepository)
 
         return await studentRepository.UpdateStudentAsync(student);
     }
+    public async Task<Student?> GetStudentByEmailAsync(string email)
+    {
+        if (string.IsNullOrWhiteSpace(email) || !email.Contains('@'))
+        {
+            throw new ArgumentException("Enter a valid email address.");
+        }
+
+        return await studentRepository.GetStudentByEmailAsync(email);
+    }
 }

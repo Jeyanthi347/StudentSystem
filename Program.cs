@@ -292,6 +292,7 @@ public class Program
             Console.WriteLine("9. Delete Course");
             Console.WriteLine("10. Search Course by Name");
             Console.WriteLine("11. Update Course");
+            Console.WriteLine("12. Search Student by Email");
             Console.WriteLine("0. Exit");
             Console.Write("Enter your choice: ");
 
@@ -696,6 +697,29 @@ public class Program
                             else
                             {
                                 Console.WriteLine("Course could not be updated.");
+                            }
+
+                            break;
+                        }
+
+                    case "12":
+                        {
+                            Console.Write("Enter student email: ");
+                            string searchEmail = Console.ReadLine() ?? "";
+
+                            Student? foundStudent =
+                                await studentService.GetStudentByEmailAsync(searchEmail);
+
+                            if (foundStudent == null)
+                            {
+                                Console.WriteLine("Student not found.");
+                            }
+                            else
+                            {
+                                Console.WriteLine($"ID: {foundStudent.StudentId}");
+                                Console.WriteLine($"Name: {foundStudent.Name}");
+                                Console.WriteLine($"Email: {foundStudent.Email}");
+                                Console.WriteLine($"Age: {foundStudent.Age}");
                             }
 
                             break;
