@@ -1,6 +1,131 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿//using System;
+//using System.Collections.Generic;
+//using System.Text;
+
+
+//using Microsoft.Data.SqlClient;
+//using StudentSystem.Models;
+
+//namespace StudentSystem.Repository;
+
+//public class StudentRepository(string connectionString)
+//{
+//    private readonly string _connectionString = connectionString;
+
+//    public async Task AddStudentAsync(Student student)
+//    {
+//        const string query = """
+//            INSERT INTO Students (Name, Email, Age)
+//            VALUES (@Name, @Email, @Age)
+//            """;
+
+//        await using var connection =
+//            new SqlConnection(_connectionString);
+
+//        await using var command =
+//            new SqlCommand(query, connection);
+
+//        command.Parameters.AddWithValue("@Name", student.Name);
+//        command.Parameters.AddWithValue("@Email", student.Email);
+//        command.Parameters.AddWithValue("@Age", student.Age);
+
+//        await connection.OpenAsync();
+//        await command.ExecuteNonQueryAsync();
+//    }
+
+//    public async Task<List<Student>> GetAllStudentsAsync()
+//    {
+//        const string query = """
+//            SELECT StudentId, Name, Email, Age
+//            FROM Students
+//            ORDER BY StudentId
+//            """;
+
+//        var students = new List<Student>();
+
+//        await using var connection =
+//            new SqlConnection(_connectionString);
+
+//        await using var command =
+//            new SqlCommand(query, connection);
+
+//        await connection.OpenAsync();
+
+//        await using var reader =
+//            await command.ExecuteReaderAsync();
+
+//        while (await reader.ReadAsync())
+//        {
+//            students.Add(new Student
+//            {
+//                StudentId = reader.GetInt32(0),
+//                Name = reader.GetString(1),
+//                Email = reader.GetString(2),
+//                Age = reader.GetInt32(3)
+//            });
+//        }
+
+//        return students;
+//    }
+
+//    public async Task<Student?> GetStudentByIdAsync(int id)
+//    {
+//        const string query = """
+//            SELECT StudentId, Name, Email, Age
+//            FROM Students
+//            WHERE StudentId = @StudentId
+//            """;
+
+//        await using var connection =
+//            new SqlConnection(_connectionString);
+
+//        await using var command =
+//            new SqlCommand(query, connection);
+
+//        command.Parameters.AddWithValue("@StudentId", id);
+
+//        await connection.OpenAsync();
+
+//        await using var reader =
+//            await command.ExecuteReaderAsync();
+
+//        if (await reader.ReadAsync())
+//        {
+//            return new Student
+//            {
+//                StudentId = reader.GetInt32(0),
+//                Name = reader.GetString(1),
+//                Email = reader.GetString(2),
+//                Age = reader.GetInt32(3)
+//            };
+//        }
+
+//        return null;
+//    }
+
+//public async Task<bool> DeleteStudentAsync(int id)
+//    {
+//        const string query = """
+//        DELETE FROM Students
+//        WHERE StudentId = @StudentId
+//        """;
+
+//        await using var connection =
+//            new SqlConnection(_connectionString);
+
+//        await using var command =
+//            new SqlCommand(query, connection);
+
+//        command.Parameters.AddWithValue("@StudentId", id);
+
+//        await connection.OpenAsync();
+
+//        int rowsAffected = await command.ExecuteNonQueryAsync();
+
+//        return rowsAffected > 0;
+//    }
+
+//}
 
 
 using Microsoft.Data.SqlClient;
@@ -19,11 +144,8 @@ public class StudentRepository(string connectionString)
             VALUES (@Name, @Email, @Age)
             """;
 
-        await using var connection =
-            new SqlConnection(_connectionString);
-
-        await using var command =
-            new SqlCommand(query, connection);
+        await using var connection = new SqlConnection(_connectionString);
+        await using var command = new SqlCommand(query, connection);
 
         command.Parameters.AddWithValue("@Name", student.Name);
         command.Parameters.AddWithValue("@Email", student.Email);
@@ -43,16 +165,12 @@ public class StudentRepository(string connectionString)
 
         var students = new List<Student>();
 
-        await using var connection =
-            new SqlConnection(_connectionString);
-
-        await using var command =
-            new SqlCommand(query, connection);
+        await using var connection = new SqlConnection(_connectionString);
+        await using var command = new SqlCommand(query, connection);
 
         await connection.OpenAsync();
 
-        await using var reader =
-            await command.ExecuteReaderAsync();
+        await using var reader = await command.ExecuteReaderAsync();
 
         while (await reader.ReadAsync())
         {
@@ -76,18 +194,14 @@ public class StudentRepository(string connectionString)
             WHERE StudentId = @StudentId
             """;
 
-        await using var connection =
-            new SqlConnection(_connectionString);
-
-        await using var command =
-            new SqlCommand(query, connection);
+        await using var connection = new SqlConnection(_connectionString);
+        await using var command = new SqlCommand(query, connection);
 
         command.Parameters.AddWithValue("@StudentId", id);
 
         await connection.OpenAsync();
 
-        await using var reader =
-            await command.ExecuteReaderAsync();
+        await using var reader = await command.ExecuteReaderAsync();
 
         if (await reader.ReadAsync())
         {
@@ -103,18 +217,15 @@ public class StudentRepository(string connectionString)
         return null;
     }
 
-public async Task<bool> DeleteStudentAsync(int id)
+    public async Task<bool> DeleteStudentAsync(int id)
     {
         const string query = """
-        DELETE FROM Students
-        WHERE StudentId = @StudentId
-        """;
+            DELETE FROM Students
+            WHERE StudentId = @StudentId
+            """;
 
-        await using var connection =
-            new SqlConnection(_connectionString);
-
-        await using var command =
-            new SqlCommand(query, connection);
+        await using var connection = new SqlConnection(_connectionString);
+        await using var command = new SqlCommand(query, connection);
 
         command.Parameters.AddWithValue("@StudentId", id);
 
@@ -125,5 +236,29 @@ public async Task<bool> DeleteStudentAsync(int id)
         return rowsAffected > 0;
     }
 
-}
+    // Update an existing student
+    public async Task<bool> UpdateStudentAsync(Student student)
+    {
+        const string query = """
+            UPDATE Students
+            SET Name = @Name,
+                Email = @Email,
+                Age = @Age
+            WHERE StudentId = @StudentId
+            """;
 
+        await using var connection = new SqlConnection(_connectionString);
+        await using var command = new SqlCommand(query, connection);
+
+        command.Parameters.AddWithValue("@StudentId", student.StudentId);
+        command.Parameters.AddWithValue("@Name", student.Name);
+        command.Parameters.AddWithValue("@Email", student.Email);
+        command.Parameters.AddWithValue("@Age", student.Age);
+
+        await connection.OpenAsync();
+
+        int rowsAffected = await command.ExecuteNonQueryAsync();
+
+        return rowsAffected > 0;
+    }
+}
