@@ -290,6 +290,7 @@ public class Program
             Console.WriteLine("7. Update Student");
             Console.WriteLine("8. Delete Student");
             Console.WriteLine("9. Delete Course");
+            Console.WriteLine("10. Search Course by Name");
             Console.WriteLine("0. Exit");
             Console.Write("Enter your choice: ");
 
@@ -607,6 +608,31 @@ public class Program
 
                             break;
                         }
+                    case "10":
+                        {
+                            Console.Write("Enter course name to search: ");
+                            string searchName = Console.ReadLine() ?? "";
+
+                            List<Course> matchingCourses =
+                                await courseService.SearchCoursesByNameAsync(searchName);
+
+                            if (matchingCourses.Count == 0)
+                            {
+                                Console.WriteLine("No matching courses found.");
+                            }
+                            else
+                            {
+                                foreach (Course c in matchingCourses)
+                                {
+                                    Console.WriteLine(
+                                        $"ID: {c.CourseId}, Name: {c.CourseName}, " +
+                                        $"Duration: {c.DurationMonths} months, Fee: {c.Fee:F2}");
+                                }
+                            }
+
+                            break;
+                        }
+                
                 }
             }
             catch (Exception ex)

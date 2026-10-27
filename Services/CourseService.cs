@@ -50,4 +50,13 @@ public class CourseService(CourseRepository courseRepository)
 
         return await courseRepository.DeleteCourseAsync(id);
     }
+    public async Task<List<Course>> SearchCoursesByNameAsync(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            throw new ArgumentException("Course name is required.");
+        }
+
+        return await courseRepository.SearchCoursesByNameAsync(name);
+    }
 }

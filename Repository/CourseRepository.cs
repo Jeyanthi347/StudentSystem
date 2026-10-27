@@ -102,8 +102,8 @@ public class CourseRepository(string connectionString)
 
         return null;
     }
-        public async Task<bool> DeleteCourseAsync(int id)
-        {
+    public async Task<bool> DeleteCourseAsync(int id)
+    {
         const string query = """
         DELETE FROM Courses
         WHERE CourseId = @CourseId
@@ -123,5 +123,41 @@ public class CourseRepository(string connectionString)
 
         return rowsAffected > 0;
     }
+
+
+        public async Task<List<Course>> SearchCoursesByNameAsync(string name)
+    {
+        const string query = """
+        SELECT CourseId, CourseName, DurationMonths, Fee
+        FROM Courses
+        WHERE CourseName LIKE @CourseName
+        ORDER BY CourseId
+        """;
+
+        List<Course> courses = new List<Course>();
+
+        await using var connection = new SqlConnection(_connectionString);
+        await using var command = new SqlCommand(query, connection);
+
+        command.Parameters.AddWithValue("@CourseName", "%" + name + "%");
+
+        await connection.OpenAsync();
+
+        await using var reader = await command.ExecuteReaderAsync();
+
+        while (await reader.ReadAsync())
+        {
+            courses.Add(new Course
+            {
+                CourseId = reader.GetInt32(0),
+                CourseName = reader.GetString(1),
+                DurationMonths = reader.GetInt32(2),
+                Fee = reader.GetDecimal(3)
+            });
+        }
+
+        return courses;
+    }
 }
+
 
