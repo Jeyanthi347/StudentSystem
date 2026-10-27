@@ -291,6 +291,7 @@ public class Program
             Console.WriteLine("8. Delete Student");
             Console.WriteLine("9. Delete Course");
             Console.WriteLine("10. Search Course by Name");
+            Console.WriteLine("11. Update Course");
             Console.WriteLine("0. Exit");
             Console.Write("Enter your choice: ");
 
@@ -632,7 +633,74 @@ public class Program
 
                             break;
                         }
-                
+                    case "11":
+                        {
+                            Console.Write("Enter the Course ID to update: ");
+
+                            if (!int.TryParse(Console.ReadLine(), out int updateCourseId))
+                            {
+                                Console.WriteLine("Please enter a valid Course ID.");
+                                break;
+                            }
+
+                            Course? existingCourse =
+                                await courseService.GetCourseByIdAsync(updateCourseId);
+
+                            if (existingCourse == null)
+                            {
+                                Console.WriteLine("Course not found.");
+                                break;
+                            }
+
+                            Console.WriteLine("\nCurrent course details:");
+                            Console.WriteLine($"Name: {existingCourse.CourseName}");
+                            Console.WriteLine($"Duration: {existingCourse.DurationMonths} months");
+                            Console.WriteLine($"Fee: {existingCourse.Fee:F2}");
+
+                            Console.WriteLine("\nEnter the updated details.");
+
+                            Console.Write("Enter new course name: ");
+                            string updatedCourseName = Console.ReadLine() ?? "";
+
+                            Console.Write("Enter new duration in months: ");
+
+                            if (!int.TryParse(Console.ReadLine(), out int updatedDuration))
+                            {
+                                Console.WriteLine("Please enter a valid duration.");
+                                break;
+                            }
+
+                            Console.Write("Enter new course fee: ");
+
+                            if (!decimal.TryParse(Console.ReadLine(), out decimal updatedFee))
+                            {
+                                Console.WriteLine("Please enter a valid fee.");
+                                break;
+                            }
+
+                            Course updatedCourse = new Course
+                            {
+                                CourseId = updateCourseId,
+                                CourseName = updatedCourseName,
+                                DurationMonths = updatedDuration,
+                                Fee = updatedFee
+                            };
+
+                            bool isUpdated =
+                                await courseService.UpdateCourseAsync(updatedCourse);
+
+                            if (isUpdated)
+                            {
+                                Console.WriteLine("Course updated successfully!");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Course could not be updated.");
+                            }
+
+                            break;
+                        }
+
                 }
             }
             catch (Exception ex)

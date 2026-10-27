@@ -59,4 +59,31 @@ public class CourseService(CourseRepository courseRepository)
 
         return await courseRepository.SearchCoursesByNameAsync(name);
     }
+    public async Task<bool> UpdateCourseAsync(Course course)
+    {
+        if (course.CourseId <= 0)
+        {
+            throw new ArgumentException(
+                "Course ID must be greater than zero.");
+        }
+
+        if (string.IsNullOrWhiteSpace(course.CourseName))
+        {
+            throw new ArgumentException("Course name is required.");
+        }
+
+        if (course.DurationMonths <= 0)
+        {
+            throw new ArgumentException(
+                "Course duration must be greater than zero.");
+        }
+
+        if (course.Fee < 0)
+        {
+            throw new ArgumentException(
+                "Course fee cannot be negative.");
+        }
+
+        return await courseRepository.UpdateCourseAsync(course);
+    }
 }

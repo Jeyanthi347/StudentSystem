@@ -158,6 +158,30 @@ public class CourseRepository(string connectionString)
 
         return courses;
     }
+    public async Task<bool> UpdateCourseAsync(Course course)
+    {
+        const string query = """
+        UPDATE Courses
+        SET CourseName = @CourseName,
+            DurationMonths = @DurationMonths,
+            Fee = @Fee
+        WHERE CourseId = @CourseId
+        """;
+
+        await using var connection = new SqlConnection(_connectionString);
+        await using var command = new SqlCommand(query, connection);
+
+        command.Parameters.AddWithValue("@CourseId", course.CourseId);
+        command.Parameters.AddWithValue("@CourseName", course.CourseName);
+        command.Parameters.AddWithValue("@DurationMonths", course.DurationMonths);
+        command.Parameters.AddWithValue("@Fee", course.Fee);
+
+        await connection.OpenAsync();
+
+        int rowsAffected = await command.ExecuteNonQueryAsync();
+
+        return rowsAffected > 0;
+    }
 }
 
 
