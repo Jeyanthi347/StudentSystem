@@ -41,4 +41,16 @@ public class StudentService(StudentRepository studentRepository)
 
         return await studentRepository.GetStudentByIdAsync(id);
     }
+
+    public async Task<bool> DeleteStudentAsync(int id)
+    {
+        if (id <= 0)
+        {
+            throw new ArgumentException(
+                "Student ID must be greater than zero.");
+        }
+
+        return await studentRepository.DeleteStudentAsync(id);
+    }
+
 }

@@ -58,3 +58,4 @@ C:\Users\jeyan\source\repos\StudentSystem\StudentSystem\obj\Debug\net10.0\refint
 C:\Users\jeyan\source\repos\StudentSystem\StudentSystem\obj\Debug\net10.0\StudentSystem.pdb
 C:\Users\jeyan\source\repos\StudentSystem\StudentSystem\obj\Debug\net10.0\StudentSystem.genruntimeconfig.cache
 C:\Users\jeyan\source\repos\StudentSystem\StudentSystem\obj\Debug\net10.0\ref\StudentSystem.dll
+C:\Users\jeyan\source\repos\StudentSystem\StudentSystem\obj\Debug\net10.0\StudentSystem.sourcelink.json

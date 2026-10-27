@@ -102,4 +102,28 @@ public class StudentRepository(string connectionString)
 
         return null;
     }
+
+public async Task<bool> DeleteStudentAsync(int id)
+    {
+        const string query = """
+        DELETE FROM Students
+        WHERE StudentId = @StudentId
+        """;
+
+        await using var connection =
+            new SqlConnection(_connectionString);
+
+        await using var command =
+            new SqlCommand(query, connection);
+
+        command.Parameters.AddWithValue("@StudentId", id);
+
+        await connection.OpenAsync();
+
+        int rowsAffected = await command.ExecuteNonQueryAsync();
+
+        return rowsAffected > 0;
+    }
+
 }
+

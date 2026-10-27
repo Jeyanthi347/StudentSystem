@@ -35,6 +35,7 @@ public class Program
             Console.WriteLine("4. Add Course");
             Console.WriteLine("5. View All Courses");
             Console.WriteLine("6. Search Course by ID");
+            Console.WriteLine("7. Delete Student");
             Console.WriteLine("0. Exit");
             Console.Write("Enter your choice: ");
 
@@ -181,6 +182,53 @@ public class Program
                             Console.WriteLine($"Fee: {foundCourse.Fee:F2}");
                         }
                         break;
+
+                    case "7":
+                        Console.Write("Enter the student ID to delete: ");
+
+                        if (!int.TryParse(Console.ReadLine(), out int deleteStudentId))
+                        {
+                            Console.WriteLine("Please enter a valid student ID.");
+                            break;
+                        }
+
+                        // Check whether the student exists first
+                        Student? studentToDelete =
+                            await studentService.GetStudentByIdAsync(deleteStudentId);
+
+                        if (studentToDelete == null)
+                        {
+                            Console.WriteLine("Student not found.");
+                            break;
+                        }
+
+                        Console.Write(
+                            $"Are you sure you want to delete {studentToDelete.Name}? (yes/no): ");
+
+                        string confirmation = Console.ReadLine() ?? "";
+
+                        if (confirmation.Equals(
+                            "yes", StringComparison.OrdinalIgnoreCase))
+                        {
+                            bool deleted =
+                                await studentService.DeleteStudentAsync(deleteStudentId);
+
+                            if (deleted)
+                            {
+                                Console.WriteLine("Student deleted successfully!");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Student could not be deleted.");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Deletion cancelled.");
+                        }
+
+                        break;
+
 
                     case "0":
                         running = false;
