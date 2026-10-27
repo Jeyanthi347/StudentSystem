@@ -276,6 +276,12 @@ public class Program
         CourseService courseService =
             new CourseService(courseRepository);
 
+        EnrollmentRepository enrollmentRepository =
+            new EnrollmentRepository(connectionString);
+
+        EnrollmentService enrollmentService =
+            new EnrollmentService(enrollmentRepository);
+
         bool running = true;
 
         while (running)
@@ -293,6 +299,9 @@ public class Program
             Console.WriteLine("10. Search Course by Name");
             Console.WriteLine("11. Update Course");
             Console.WriteLine("12. Search Student by Email");
+            Console.WriteLine("13. Enroll Student in Course");
+            Console.WriteLine("14. View All Enrollments");
+            Console.WriteLine("15. Search Enrollment by ID");
             Console.WriteLine("0. Exit");
             Console.Write("Enter your choice: ");
 
@@ -725,6 +734,108 @@ public class Program
                             break;
                         }
 
+                    case "13":
+                        {
+                            Console.Write("Enter Student ID: ");
+
+                            if (!int.TryParse(Console.ReadLine(), out int enrollStudentId))
+                            {
+                                Console.WriteLine("Please enter a valid Student ID.");
+                                break;
+                            }
+
+                            Student? student =
+                                await studentService.GetStudentByIdAsync(enrollStudentId);
+
+                            if (student == null)
+                            {
+                                Console.WriteLine("Student not found.");
+                                break;
+                            }
+
+                            Console.Write("Enter Course ID: ");
+
+                            if (!int.TryParse(Console.ReadLine(), out int enrollCourseId))
+                            {
+                                Console.WriteLine("Please enter a valid Course ID.");
+                                break;
+                            }
+
+                            Course? course =
+                                await courseService.GetCourseByIdAsync(enrollCourseId);
+
+                            if (course == null)
+                            {
+                                Console.WriteLine("Course not found.");
+                                break;
+                            }
+
+                            Enrollment enrollment = new Enrollment
+                            {
+                                StudentId = enrollStudentId,
+                                CourseId = enrollCourseId
+                            };
+
+                            await enrollmentService.AddEnrollmentAsync(enrollment);
+
+                            Console.WriteLine("Student enrolled successfully!");
+                            break;
+                        }
+
+                    case "14":
+                        {
+                            List<Enrollment> enrollments =
+                                await enrollmentService.GetAllEnrollmentsAsync();
+
+                            if (enrollments.Count == 0)
+                            {
+                                Console.WriteLine("No enrollments found.");
+                            }
+                            else
+                            {
+                                foreach (Enrollment e in enrollments)
+                                {
+                                    Console.WriteLine(
+                                        $"Enrollment ID: {e.EnrollmentId}, " +
+                                        $"Student: {e.StudentName} (ID: {e.StudentId}), " +
+                                        $"Course: {e.CourseName} (ID: {e.CourseId}), " +
+                                        $"Date: {e.EnrollmentDate:dd-MM-yyyy}");
+                                }
+                            }
+
+                            break;
+                        }
+
+                    case "15":
+                        {
+                            Console.Write("Enter Enrollment ID: ");
+
+                            if (!int.TryParse(Console.ReadLine(), out int enrollmentId))
+                            {
+                                Console.WriteLine("Please enter a valid Enrollment ID.");
+                                break;
+                            }
+
+                            Enrollment? enrollment =
+                                await enrollmentService.GetEnrollmentByIdAsync(enrollmentId);
+
+                            if (enrollment == null)
+                            {
+                                Console.WriteLine("Enrollment not found.");
+                            }
+                            else
+                            {
+                                Console.WriteLine($"Enrollment ID: {enrollment.EnrollmentId}");
+                                Console.WriteLine(
+                                    $"Student: {enrollment.StudentName} (ID: {enrollment.StudentId})");
+                                Console.WriteLine(
+                                    $"Course: {enrollment.CourseName} (ID: {enrollment.CourseId})");
+                                Console.WriteLine(
+                                    $"Enrollment Date: {enrollment.EnrollmentDate:dd-MM-yyyy}");
+                            }
+
+                            break;
+                        }
                 }
             }
             catch (Exception ex)
