@@ -1,0 +1,202 @@
+﻿
+using StudentSystem.Models;
+using StudentSystem.Repository;
+using StudentSystem.Services;
+
+namespace StudentSystem;
+
+public class Program
+{
+    public static async Task Main(string[] args)
+    {
+        string connectionString =
+            @"Server=.\SQLEXPRESS;Database=StudentCourseDB;Trusted_Connection=True;TrustServerCertificate=True;";
+
+        StudentRepository studentRepository =
+            new StudentRepository(connectionString);
+
+        CourseRepository courseRepository =
+            new CourseRepository(connectionString);
+
+        StudentService studentService =
+            new StudentService(studentRepository);
+
+        CourseService courseService =
+            new CourseService(courseRepository);
+
+        bool running = true;
+
+        while (running)
+        {
+            Console.WriteLine("\n===== Student System =====");
+            Console.WriteLine("1. Add Student");
+            Console.WriteLine("2. View All Students");
+            Console.WriteLine("3. Search Student by ID");
+            Console.WriteLine("4. Add Course");
+            Console.WriteLine("5. View All Courses");
+            Console.WriteLine("6. Search Course by ID");
+            Console.WriteLine("0. Exit");
+            Console.Write("Enter your choice: ");
+
+            string choice = Console.ReadLine() ?? "";
+
+            try
+            {
+                switch (choice)
+                {
+                    case "1":
+                        Console.Write("Enter student name: ");
+                        string name = Console.ReadLine() ?? "";
+
+                        Console.Write("Enter student email: ");
+                        string email = Console.ReadLine() ?? "";
+
+                        Console.Write("Enter student age: ");
+                        if (!int.TryParse(Console.ReadLine(), out int age))
+                        {
+                            Console.WriteLine("Please enter a valid age.");
+                            break;
+                        }
+
+                        Student student = new Student
+                        {
+                            Name = name,
+                            Email = email,
+                            Age = age
+                        };
+
+                        await studentService.AddStudentAsync(student);
+                        Console.WriteLine("Student added successfully!");
+                        break;
+
+                    case "2":
+                        List<Student> students =
+                            await studentService.GetAllStudentsAsync();
+
+                        if (students.Count == 0)
+                        {
+                            Console.WriteLine("No students found.");
+                        }
+                        else
+                        {
+                            foreach (Student s in students)
+                            {
+                                Console.WriteLine(
+                                    $"ID: {s.StudentId}, Name: {s.Name}, Email: {s.Email}, Age: {s.Age}");
+                            }
+                        }
+                        break;
+
+                    case "3":
+                        Console.Write("Enter student ID: ");
+                        if (!int.TryParse(Console.ReadLine(), out int studentId))
+                        {
+                            Console.WriteLine("Please enter a valid ID.");
+                            break;
+                        }
+
+                        Student? foundStudent =
+                            await studentService.GetStudentByIdAsync(studentId);
+
+                        if (foundStudent == null)
+                        {
+                            Console.WriteLine("Student not found.");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"ID: {foundStudent.StudentId}");
+                            Console.WriteLine($"Name: {foundStudent.Name}");
+                            Console.WriteLine($"Email: {foundStudent.Email}");
+                            Console.WriteLine($"Age: {foundStudent.Age}");
+                        }
+                        break;
+
+                    case "4":
+                        Console.Write("Enter course name: ");
+                        string courseName = Console.ReadLine() ?? "";
+
+                        Console.Write("Enter duration in months: ");
+                        if (!int.TryParse(Console.ReadLine(), out int duration))
+                        {
+                            Console.WriteLine("Please enter a valid duration.");
+                            break;
+                        }
+
+                        Console.Write("Enter course fee: ");
+                        if (!decimal.TryParse(Console.ReadLine(), out decimal fee))
+                        {
+                            Console.WriteLine("Please enter a valid fee.");
+                            break;
+                        }
+
+                        Course course = new Course
+                        {
+                            CourseName = courseName,
+                            DurationMonths = duration,
+                            Fee = fee
+                        };
+
+                        await courseService.AddCourseAsync(course);
+                        Console.WriteLine("Course added successfully!");
+                        break;
+
+                    case "5":
+                        List<Course> courses =
+                            await courseService.GetAllCoursesAsync();
+
+                        if (courses.Count == 0)
+                        {
+                            Console.WriteLine("No courses found.");
+                        }
+                        else
+                        {
+                            foreach (Course c in courses)
+                            {
+                                Console.WriteLine(
+                                    $"ID: {c.CourseId}, Name: {c.CourseName}, Duration: {c.DurationMonths} months, Fee: {c.Fee:F2}");
+                            }
+                        }
+                        break;
+
+                    case "6":
+                        Console.Write("Enter course ID: ");
+                        if (!int.TryParse(Console.ReadLine(), out int courseId))
+                        {
+                            Console.WriteLine("Please enter a valid ID.");
+                            break;
+                        }
+
+                        Course? foundCourse =
+                            await courseService.GetCourseByIdAsync(courseId);
+
+                        if (foundCourse == null)
+                        {
+                            Console.WriteLine("Course not found.");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"ID: {foundCourse.CourseId}");
+                            Console.WriteLine($"Name: {foundCourse.CourseName}");
+                            Console.WriteLine($"Duration: {foundCourse.DurationMonths} months");
+                            Console.WriteLine($"Fee: {foundCourse.Fee:F2}");
+                        }
+                        break;
+
+                    case "0":
+                        running = false;
+                        Console.WriteLine("Exiting Student System.");
+                        break;
+
+                    default:
+                        Console.WriteLine("Invalid choice. Try again.");
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+        }
+        Console.ReadKey();
+    }
+}
