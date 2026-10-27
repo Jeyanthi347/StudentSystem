@@ -302,6 +302,7 @@ public class Program
             Console.WriteLine("13. Enroll Student in Course");
             Console.WriteLine("14. View All Enrollments");
             Console.WriteLine("15. Search Enrollment by ID");
+            Console.WriteLine("16. Delete Enrollment");
             Console.WriteLine("0. Exit");
             Console.Write("Enter your choice: ");
 
@@ -836,6 +837,55 @@ public class Program
 
                             break;
                         }
+
+
+                    case "16":
+                        {
+                            Console.Write("Enter Enrollment ID to delete: ");
+
+                            if (!int.TryParse(Console.ReadLine(), out int deleteEnrollmentId))
+                            {
+                                Console.WriteLine("Please enter a valid Enrollment ID.");
+                                break;
+                            }
+
+                            Enrollment? enrollment =
+                                await enrollmentService.GetEnrollmentByIdAsync(deleteEnrollmentId);
+
+                            if (enrollment == null)
+                            {
+                                Console.WriteLine("Enrollment not found.");
+                                break;
+                            }
+
+                            Console.Write(
+                                $"Cancel enrollment for {enrollment.StudentName} " +
+                                $"in {enrollment.CourseName}? (yes/no): ");
+
+                            string confirmation = Console.ReadLine() ?? "";
+
+                            if (confirmation.Equals("yes", StringComparison.OrdinalIgnoreCase))
+                            {
+                                bool deleted =
+                                    await enrollmentService.DeleteEnrollmentAsync(deleteEnrollmentId);
+
+                                if (deleted)
+                                {
+                                    Console.WriteLine("Enrollment deleted successfully!");
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Enrollment could not be deleted.");
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("Deletion cancelled.");
+                            }
+
+                            break;
+                        }
+
                 }
             }
             catch (Exception ex)

@@ -124,4 +124,28 @@ public class EnrollmentRepository(string connectionString)
 
         return null;
     }
+
+
+    public async Task<bool> DeleteEnrollmentAsync(int id)
+    {
+        const string query = """
+        DELETE FROM Enrollments
+        WHERE EnrollmentId = @EnrollmentId
+        """;
+
+        await using var connection =
+            new SqlConnection(_connectionString);
+
+        await using var command =
+            new SqlCommand(query, connection);
+
+        command.Parameters.AddWithValue("@EnrollmentId", id);
+
+        await connection.OpenAsync();
+
+        int rowsAffected = await command.ExecuteNonQueryAsync();
+
+        return rowsAffected > 0;
+    }
+
 }
